@@ -1,0 +1,15 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eks-test-cluster
+  region: eu-north-1
+
+nodeGroups:
+  - name: ng-eks-test-cluster-1
+    instanceType: t3.medium
+    desiredCapacity: 2
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]

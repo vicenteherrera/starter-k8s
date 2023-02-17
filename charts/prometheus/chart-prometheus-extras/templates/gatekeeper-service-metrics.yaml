@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gatekeeper-metrics
+  labels:
+    app: gatekeeper
+  namespace: gatekeeper
+spec:
+  selector:
+    app: gatekeeper
+  ports:
+  - name: metrics
+    port: 8888

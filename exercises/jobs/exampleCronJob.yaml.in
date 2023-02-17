@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sec-test-$NAME
+spec:
+  schedule: "*/$FREQ * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        cronjob: sec-test-$NAME
+    spec:
+      backoffLimit: 3
+      template:
+        metadata:
+          labels:
+            cronjob: sec-test-$NAME
+        spec:
+          containers:
+          - name: random-success
+            image: bash
+            command: ["bash"]
+            args: [ '-c', 'echo "Random fail or success" ; if [ "$RANDOM" -gt "$CHANCE" ]; then echo "fail" && exit 1; else echo "success"; fi' ]
+          restartPolicy: Never

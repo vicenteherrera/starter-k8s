@@ -1,0 +1,47 @@
+additionalPrometheusRules:
+- name: gatekeeper
+  groups:
+  - name: gatekeeper
+    rules:
+    - alert: GatekeeperConstraintChange
+      annotations:
+        summary: 'Number of active Gatekeeper OPA deny constraints changed'
+        description: 'Number of active Gatekeeper OPA deny constraints changed. This can be the result of constraints wrongfully being deleted, or chaning the number of Gatekeeper pods, or cluster nodes. Please navigate to the runbook here for remediation steps: https://github.com/controlplaneio/eks-security-monitoring.'
+        runbook_url: https://github.com/controlplaneio/eks-security-monitoring
+      for: 1m
+      expr: irate(gatekeeper_constraints{enforcement_action="deny", status="active"}[5m])>0
+      labels:
+        severity: High
+    - alert: GatekeeperConstraintTemplatesChange
+      annotations:
+        summary: 'Number of active Gatekeeper OPA deny constraints changed'
+        description: 'Number of active Gatekeeper OPA deny constraints changed. This can be the result of constraints wrongfully being deleted, or chaning the number of Gatekeeper pods, or cluster nodes. Please navigate to the runbook here for remediation steps: https://github.com/controlplaneio/eks-security-monitoring.'
+        runbook_url: https://github.com/controlplaneio/eks-security-monitoring
+      for: 1m
+      expr: irate(gatekeeper_constraint_templates{status="active"}[5m])>0
+      labels:
+        severity: High
+    - alert: GatekeeperAuditViolationIncrease
+      annotations:
+        summary: 'Number of Gatekeeper audit violations have increased'
+        description: 'Number of Gatekeeper audit violations have increased. This may be possible for assets being created before a constarint was enable. Please navigate to the runbook here for remediation steps: https://github.com/controlplaneio/eks-security-monitoring.'
+        runbook_url: https://github.com/controlplaneio/eks-security-monitoring
+      for: 1m
+      expr: ((gatekeeper_violations - gatekeeper_violations offset 1m) > 0)
+      labels:
+        severity: High
+    - alert: GatekeeperWebhookStuck
+      annotations:
+        summary: 'Gatekeeper controller webhook for mutation or audit not receiving calls'
+        description: |
+          Gatekeeper admission controller pods webhook for mutation or audit not receiving calls. 
+          They should be receiving a continuous stream of calls from the Kubernetes control plane for processing.
+          Please check the Gatekeeper dashboard for more information, the chart deployment status, that the service endpoint is deployed, and the number of pods of the deployment is correct.
+          
+          Please navigate to the runbook here for remediation steps: https://github.com/controlplaneio/eks-security-monitoring.'
+        runbook_url: https://github.com/controlplaneio/eks-security-monitoring
+      for: 1m
+      expr: ((gatekeeper_mutation_request_count - gatekeeper_mutation_request_count offset 1m) == 0) or ((gatekeeper_validation_request_count - gatekeeper_validation_request_count offset 1m) == 0)
+      labels:
+        severity: Medium
+

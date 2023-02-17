@@ -1,0 +1,19 @@
+grafana:
+  defaultDashboardsEnabled: 0
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_wait: 20s
+      group_interval: 4m
+      repeat_interval: 4h
+      routes: 
+      - match:
+          alertname: NodeClockNotSynchronising
+        receiver: "null"
+      - match:
+          alertname: etcdInsufficientMembers
+        receiver: "null"
+    receivers:
+    - name: "null"

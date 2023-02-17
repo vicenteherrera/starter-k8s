@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: privileged-deployment
+  name: privileged-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: privileged-deployment
+  template:
+    metadata:
+      labels:
+        app: privileged-deployment
+    spec:
+      containers:
+      - image: busybox
+        imagePullPolicy: Always
+        name: busybox
+        command: ['sh', '-c', 'sleep 99999']        
+        securityContext:
+          privileged: true
+      terminationGracePeriodSeconds: 3

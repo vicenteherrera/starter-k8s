@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: helm-exporter
+  # Change this to the namespace the Prometheus instance is running in
+  # namespace: default
+  labels:
+    release: promstack
+  namespace: helm-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: helm-exporter
+  endpoints:
+  - port: http

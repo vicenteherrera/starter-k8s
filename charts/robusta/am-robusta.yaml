@@ -1,0 +1,9 @@
+alertmanager:
+  route:
+    receiver: 'webhook'
+  config:
+    receivers:
+      - name: 'webhook'
+        webhook_configs:
+          - url: 'http://robusta-runner.robusta.svc.cluster.local/api/alerts'
+            send_resolved: true

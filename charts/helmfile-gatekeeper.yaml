@@ -1,0 +1,40 @@
+---
+repositories:
+  - name: gatekeeper
+    url: https://open-policy-agent.github.io/gatekeeper/charts
+
+releases:
+
+  - name: gatekeeper-system
+    chart: gatekeeper/gatekeeper
+    namespace: gatekeeper
+    version: "3.8.1"
+    createNamespace: true 
+    installed: true 
+    wait: true
+    waitForJobs: true
+
+  - name: gatekeeper-templates
+    chart: ./gatekeeper/chart-templates/
+    namespace: gatekeeper
+    version: "0.1.0" 
+    installed: true
+    wait: true
+    waitForJobs: true
+    values:
+      - gatekeeper/chart-templates/values.yaml
+    needs:
+      - gatekeeper/gatekeeper-system
+
+  - name: gatekeeper-constraints
+    chart: ./gatekeeper/chart-constraints/
+    namespace: gatekeeper
+    version: "0.1.0"
+    installed: true
+    wait: true
+    waitForJobs: true    
+    values:
+      - gatekeeper/chart-constraints/values.yaml    
+    needs:
+      - gatekeeper/gatekeeper-system
+      - gatekeeper/gatekeeper-templates

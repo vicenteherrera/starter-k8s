@@ -1,0 +1,23 @@
+globalConfig:
+  signing_key: replace_me
+  account_id: replace_me
+sinksConfig:
+- robusta_sink:
+    name: robusta_ui_sink
+    token: replace_me
+clusterName: starter-k8s
+enablePlatformPlaybooks: true
+playbooksPersistentVolumeSize: 128Mi
+kubewatch:
+  resources:
+    requests:
+      memory: 64Mi
+grafanaRenderer:
+  resources:
+    requests:
+      memory: 64Mi
+runner:
+  sendAdditionalTelemetry: false
+rsa:
+  prv: 'replace_me'
+  pub: 'replace_me'

@@ -1,0 +1,27 @@
+# https://docs.mirantis.com/mke/3.5/ops/deploy-apps-k8s/pod-security-policies/psp-examples.html
+
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: seccomppolicy
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
+spec:
+  allowPrivilegeEscalation: false
+  allowedHostPaths:
+  - pathPrefix: /dev/null
+    readOnly: true
+  fsGroup:
+    rule: RunAsAny
+  hostPorts:
+  - max: 65535
+    min: 0
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - '*'

@@ -1,0 +1,11 @@
+- rule: Admission Controller Block
+  desc: >
+     Detected an admission controller blocking a deployment
+  condition: kevt and jevt.value[/responseStatus/status]="Failure" and jevt.value[/responseStatus/reason]="Forbidden"
+  output: >
+    Admission controller blocked deployment 
+    (user=%ka.user.name verb=%ka.verb message=jevt.value[/responseObject/message] sourceIps=jevt.value[/sourceIPs])
+  priority: WARNING
+  source: k8s_audit
+  tags: [k8s]
+

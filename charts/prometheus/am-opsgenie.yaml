@@ -1,0 +1,58 @@
+# see: https://kb.vshn.ch/vshnsyn/how-tos/opsgenie.html
+# see: https://prometheus.io/docs/alerting/latest/configuration/#opsgenie-receiver-%3Copsgenie_config%3E
+alertmanager:
+  config:
+    global:
+      opsgenie_api_key: replace_api_key
+    route:
+      receiver: 'opsgenie'
+      routes:
+        - match:
+            alertname: Watchdog
+          receiver: "opsgenie"
+        - receiver: 'opsgenie'
+    receivers:
+    - name: 'opsgenie'
+      opsgenie_configs:
+        - priority: '{{ if eq .GroupLabels.severity "critical" }}P1{{ else if eq .GroupLabels.severity "warning" }}P2{{ else if eq .GroupLabels.severity "info" }}P3{{ else }}P4{{ end }}'
+          message: '[{{ .CommonLabels.tenant_id }}/{{ .CommonLabels.cluster_id }}] {{ .GroupLabels.alertname }} in {{ .GroupLabels.namespace }}'
+          description: |-
+            {{ if gt (len .Alerts.Firing) 0 -}}
+            Alerts Firing:
+            {{ range .Alerts.Firing }}
+              - Message: {{ .Annotations.message }}
+                Labels:
+            {{ range .Labels.SortedPairs }}   - {{ .Name }} = {{ .Value }}
+            {{ end }}   Annotations:
+            {{ range .Annotations.SortedPairs }}   - {{ .Name }} = {{ .Value }}
+            {{ end }}   Source: {{ .GeneratorURL }}
+            {{ end }}
+            {{- end }}
+            {{ if gt (len .Alerts.Resolved) 0 -}}
+            Alerts Resolved:
+            {{ range .Alerts.Resolved }}
+              - Message: {{ .Annotations.message }}
+                Labels:
+            {{ range .Labels.SortedPairs }}   - {{ .Name }} = {{ .Value }}
+            {{ end }}   Annotations:
+            {{ range .Annotations.SortedPairs }}   - {{ .Name }} = {{ .Value }}
+            {{ end }}   Source: {{ .GeneratorURL }}
+            {{ end }}
+            {{- end }}
+          details:
+            namespace: '{{- if .CommonLabels.exported_namespace -}}{{- .CommonLabels.exported_namespace -}}{{- else if .CommonLabels.namespace -}}{{- .CommonLabels.namespace -}}{{- end -}}'
+            pod: '{{- if .CommonLabels.pod -}}{{- .CommonLabels.pod -}}{{- end -}}'
+            deployment: '{{- if .CommonLabels.deployment -}}{{- .CommonLabels.deployment -}}{{- end -}}'
+            alertname: '{{ .GroupLabels.alertname }}'
+            cluster_id: '{{ .CommonLabels.cluster_id }}'
+            tenant_id: '{{ .CommonLabels.tenant_id }}'
+            severity: '{{ .GroupLabels.severity }}'
+          tags: '{{ .CommonLabels.tenant_id }},
+            {{ .CommonLabels.cluster_id }},
+            {{ .GroupLabels.severity }},
+            {{ .GroupLabels.alertname }},
+            {{ .GroupLabels.namespace }},
+            {{- if .CommonLabels.exported_namespace -}}{{ .CommonLabels.exported_namespace }},{{- end -}}'
+          responders:
+            - id: replace_team_id
+              type: team

@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gatekeeper
+  labels:
+    release: promstack
+  namespace: gatekeeper
+spec:
+  selector:
+    matchLabels:
+      app: gatekeeper
+  endpoints:
+  - port: metrics
+

@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: sec-test-$JOBNAME-
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: random-success
+        image: bash
+        command: ["bash"]
+        args: [ '-c', 'echo "Random fail or success" ; if [ "$RANDOM" -gt "5000" ]; then echo "fail" && exit 1; else echo "success"; fi' ]
+

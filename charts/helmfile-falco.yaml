@@ -1,0 +1,16 @@
+---
+repositories:
+  - name: falcosecurity
+    url: https://falcosecurity.github.io/charts
+
+releases:
+
+  - name: falco
+    chart: falcosecurity/falco
+    namespace: falco
+    createNamespace: true
+    installed: true
+    wait: true
+    waitForJobs: true
+    values:
+    - ./falco/values.yaml

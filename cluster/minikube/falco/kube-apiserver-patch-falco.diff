@@ -1,0 +1,46 @@
+--- kube-apiserver-original.yaml	2022-06-06 13:02:25.044395565 +0200
++++ kube-apiserver-modified.yaml	2022-06-06 13:07:29.129971834 +0200
+@@ -23,6 +23,8 @@
+     - --etcd-certfile=/var/lib/minikube/certs/apiserver-etcd-client.crt
+     - --etcd-keyfile=/var/lib/minikube/certs/apiserver-etcd-client.key
+     - --etcd-servers=https://127.0.0.1:2379
++    - --audit-policy-file=/var/lib/k8s_audit/audit-policy.yaml
++    - --audit-log-path=/var/log/audit/audit.log
++    - --audit-webhook-config-file=/var/lib/k8s_audit/webhook-config.yaml
+     - --kubelet-client-certificate=/var/lib/minikube/certs/apiserver-kubelet-client.crt
+     - --kubelet-client-key=/var/lib/minikube/certs/apiserver-kubelet-client.key
+     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+@@ -85,12 +87,26 @@
+     - mountPath: /usr/share/ca-certificates
+       name: usr-share-ca-certificates
+       readOnly: true
++    - mountPath: /var/lib/k8s_audit/audit-policy.yaml
++      name: audit
++      readOnly: true
++    - mountPath: /var/lib/k8s_audit/webhook-config.yaml
++      name: audit-webhook
++      readOnly: true
++    - mountPath: /var/log/audit/audit.log
++      name: audit-log
++      readOnly: false
+   hostNetwork: true
+   priorityClassName: system-node-critical
+   securityContext:
+     seccompProfile:
+       type: RuntimeDefault
+   volumes:
++  - name: audit
++    hostPath:
++      path: /var/lib/k8s_audit/audit-policy.yaml
++      type: File
++  - name: audit
++    hostPath:
++      path: /var/lib/k8s_audit/webhook-config.yaml
++      type: File
++  - name: audit-log
++    hostPath:
++      path: /var/log/audit/audit.log
++      type: FileOrCreate
+   - hostPath:
+       path: /etc/ssl/certs
+       type: DirectoryOrCreate

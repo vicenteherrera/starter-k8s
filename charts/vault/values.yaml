@@ -1,0 +1,14 @@
+
+server:
+  affinity: ""
+  ha:
+    enabled: true
+    raft: 
+      enabled: true
+
+injector:
+  agentDefaults:
+    cpuLimit: 550m
+    cpuRequest: 300m
+    memLimit: 150Mi
+    memRequest: 70Mi

@@ -1,0 +1,8 @@
+---
+context: starter-k8s
+
+helmfiles:
+- ./helmfile-gatekeeper.yaml
+- ./helmfile-secrets.yaml
+- ./helmfile-observability.yaml
+- ./helmfile-falco.yaml

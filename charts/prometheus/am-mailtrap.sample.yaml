@@ -1,0 +1,12 @@
+alertmanager:
+  config:
+    route:
+      receiver: 'email-k8s-admin'
+    receivers:
+    - name: 'email-k8s-admin'
+      email_configs:
+      - to: k8s-admin@example.com
+        from: email-k8s-admin@alertmanager.com 
+        smarthost: smtp.mailtrap.io:587
+        auth_username: replace_username
+        auth_password: replace_password
