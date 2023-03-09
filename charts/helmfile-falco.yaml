@@ -12,5 +12,7 @@ releases:
     installed: true
     wait: true
     waitForJobs: true
+    version: "1.17.3"
+    # Latest chart 1.19.2 doesn't work on this version of the ISO minikube uses
     values:
     - ./falco/values.yaml

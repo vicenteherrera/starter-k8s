@@ -2,8 +2,8 @@ auditLog:
   enabled: true
 resources:
   limits:
-    cpu: 500m
+    cpu: 750m
     memory: 512Mi
   requests:
-    memory: 256Mi
+    memory: 128Mi
     cpu: 50m
