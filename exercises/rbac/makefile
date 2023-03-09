@@ -12,7 +12,7 @@ create-user:
 	cp user1.key ~/.minikube/user1.key && \
 	cp user1.csr ~/.minikube/user1.csr && \
 	kubectl config set-credentials user1 --client-certificate=user1.crt --client-key=user1.key && \
-	kubectl config set-context user1-minikube --namespace=tennant --user=user1
+	kubectl config set-context user1-minikube --namespace=tenant --user=user1
 		
 deploy-roles:
 	kubectl apply -f rbac/role.yaml
@@ -32,6 +32,6 @@ can-i-user1:
 	kubectl auth can-i --list --as=user1
 
 switch-user1:
-	kubectl config set-context user1-minikube --namespace=tennant --user=user1
+	kubectl config set-context user1-minikube --namespace=tenant --user=user1
 	kubectl config use-context user1-minikube
 
