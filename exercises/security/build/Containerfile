@@ -1,0 +1,7 @@
+# see https://pythonspeed.com/articles/docker-build-secrets/
+# syntax = docker/dockerfile:1.3
+
+FROM ubuntu
+RUN --mount=type=secret,id=token \
+    echo "Found:" && cat /run/secrets/token
+CMD /bin/bash -c 'echo "Found:"; cat /run/secrets/token'
