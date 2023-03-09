@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: example-ns
+  labels:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: example-app
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: example-app
+    spec:
+      shareProcessNamespace: true # doesn't give PID 1
+      containers:
+        - name: app-container
+          image: nginx:1.14.2
+          imagePullPolicy: Always
+          command:
+            - /bin/bash
+            - -c
+            - "while :; do date ; cat /etc/token ; echo ''; sleep 60 ; done"
+          ports:
+            - containerPort: 80
+          securityContext:
+            # Required for PSS restricted
+            capabilities:
+              drop: ["ALL"]
+              add:
+                - "NET_BIND_SERVICE" # for port 80
+                - "SYS_PTRACE" # to debug from ephemeral container
+            runAsNonRoot: true
+            runAsUser: 10000 # Optional, must not be 0
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault # or "Localhost"
