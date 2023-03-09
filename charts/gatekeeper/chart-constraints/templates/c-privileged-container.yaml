@@ -9,5 +9,5 @@ spec:
       - apiGroups: [""]
         kinds: ["Pod"]
     namespaces:
-      - "tennant"
+      - "tenant"
       

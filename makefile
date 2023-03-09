@@ -52,12 +52,12 @@ prepare_secrets:
 
 # Install Google Microservices Demo
 install_demo:
-	@$(MAKE) -s create_namespace NAMESPACE=tennant
-	kubectl apply -n tennant -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
+	kubectl create ns tenant ||:
+	kubectl apply -n tenant -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
 
 # Delete Google Microservices Demo
 delete_demo:
-	kubectl delete -n tennant -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
+	kubectl delete -n tenant -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
 
 # Install Graylog
 install_graylog:

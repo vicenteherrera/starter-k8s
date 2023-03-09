@@ -9,7 +9,7 @@ spec:
         kinds: ["Deployment"]
     scope: "Namespaced"
     namespaces:
-      - "tennant"
+      - "tenant"
   parameters:
     labels: 
     - {{ .Values.constraint.label }}
