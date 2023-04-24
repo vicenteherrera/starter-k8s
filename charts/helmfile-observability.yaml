@@ -26,6 +26,13 @@ releases:
     - name: alertmanager.config.receivers[0].opsgenie_configs[0].responders[0].id
       value: {{ requiredEnv "opsgenie_responder_id" }}
 
+  - name: helm-exporter 
+    chart: sstarcher/helm-exporter
+    namespace: helm-exporter
+    version: "1.2.2+6766a95"
+    createNamespace: true 
+    installed: true
+
   - name: prometheus-extras
     chart: ./prometheus/chart-prometheus-extras
     namespace: promstack
@@ -34,13 +41,7 @@ releases:
     installed: true 
     needs:
     - promstack/promstack
-
-  - name: helm-exporter 
-    chart: sstarcher/helm-exporter
-    namespace: helm-exporter
-    version: "1.2.2+6766a95"
-    createNamespace: true 
-    installed: true
+    - sstarcher/helm-exporter
 
   - name: robusta
     chart: robusta/robusta 
