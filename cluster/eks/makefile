@@ -25,4 +25,4 @@ audit_log:
 	aws logs tail "/aws/eks/eks-test-cluster/cluster" --follow
 
 audit_log_pss:
-	aws logs tail "/aws/eks/eks-test-cluster/cluster" --follow "FailedCreate"
+	aws logs tail "/aws/eks/eks-test-cluster/cluster" --filter "FailedCreate"
