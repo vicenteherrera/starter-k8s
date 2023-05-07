@@ -41,7 +41,7 @@ releases:
     installed: true 
     needs:
     - promstack/promstack
-    - sstarcher/helm-exporter
+    - helm-exporter/helm-exporter
 
   - name: robusta
     chart: robusta/robusta 
