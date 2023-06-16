@@ -1,0 +1,16 @@
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+    name: deny-kubelet-prot
+spec:
+    types:
+    - Egress
+    egress:
+    - action: Deny
+      protocol: TCP
+      destination:
+        nets:
+        - 0.0.0.0/0
+        ports:
+        - 10250
+    source: {}

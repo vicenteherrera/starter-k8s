@@ -1,0 +1,24 @@
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-nginx-only
+spec:
+  selector: app == 'nginx'
+  types:
+    - Ingress
+    - Egress
+  ingress:
+    - action: Allow
+      metadata:
+        annotations:
+          from: frontend
+          to: database
+      protocol: TCP
+      source:
+        selector: role == 'frontend'
+      destination:
+        ports:
+          - 80
+          - 443
+  egress:
+    - action: Allow
