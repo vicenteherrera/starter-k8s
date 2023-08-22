@@ -1,10 +1,16 @@
 
+KUBERNETES_VER=1.28.0
+CPUS=4
+MEMORY=8g
 
 # See https://github.com/prometheus-operator/kube-prometheus
+
 start:
 	minikube delete ||:
 	minikube start \
-		--kubernetes-version=v1.23.0 --memory=6g --cpus 4 \
+		--kubernetes-version=v${KUBERNETES_VER}
+		--memory=${MEMORY} \
+		--cpus=${CPUS} \
 		--bootstrapper=kubeadm \
 		--extra-config=kubelet.authentication-token-webhook=true \
 		--extra-config=kubelet.authorization-mode=Webhook \
@@ -25,3 +31,9 @@ enable_audit_log:
 
 audit_log:
 	minikube ssh -- tail /var/log/audit/audit.log -f
+
+# Custom targets------
+
+# Use this to tunnel load balancers
+tunnel:
+	minikube tunnel

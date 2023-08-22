@@ -8,7 +8,7 @@ releases:
   - name: gatekeeper-system
     chart: gatekeeper/gatekeeper
     namespace: gatekeeper
-    version: "3.8.1"
+    version: "3.13.0"
     createNamespace: true 
     installed: true 
     wait: true
