@@ -2,15 +2,16 @@
 KUBERNETES_VER=1.28.0
 CPUS=4
 MEMORY=8g
-
+DISK=20000mb
 # See https://github.com/prometheus-operator/kube-prometheus
 
 start:
 	minikube delete ||:
 	minikube start \
-		--kubernetes-version=v${KUBERNETES_VER}
-		--memory=${MEMORY} \
-		--cpus=${CPUS} \
+		--kubernetes-version="v${KUBERNETES_VER}" \
+		--memory="${MEMORY}" \
+		--cpus="${CPUS}" \
+		--disk-size="${DISK}" \
 		--bootstrapper=kubeadm \
 		--extra-config=kubelet.authentication-token-webhook=true \
 		--extra-config=kubelet.authorization-mode=Webhook \
