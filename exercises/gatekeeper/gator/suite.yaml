@@ -1,0 +1,16 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+tests:
+  - name: example-suite
+    template: ./template.yaml
+    constraint: ./constraint.yaml
+    cases:
+      - name: nginx-no-priviliged-container
+        object: ./test-success.yaml
+        assertions:
+        - violations: 0
+      - name: nginx-priviliged-container
+        object: ./test-failure.yaml
+        assertions:
+        - violations: 1
+          message: "not allowed"

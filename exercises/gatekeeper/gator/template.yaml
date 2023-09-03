@@ -1,0 +1,32 @@
+kind: ConstraintTemplate
+apiVersion: templates.gatekeeper.sh/v1beta1
+metadata:
+  name: k8snoprivileged
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sNoPrivileged
+  parameters:
+    - name: forbiddenValue
+      type: string
+      description: "The enforced value for securityContext.privileged"
+      openAPIV3Schema:
+        type: string       
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8snoprivileged
+
+        input_containers[c] {
+            c := input.review.object.spec.containers[_]
+        }
+        input_containers[c] {
+            c := input.review.object.spec.initContainers[_]
+        }
+        
+        violation[{"msg": msg, "details": {}}] {
+            c := input_containers[_]
+            c.securityContext.privileged == input.parameters.forbiddenValue
+            msg := sprintf("Privileged container is not allowed: %v, securityContext: %v", [c.name, c.securityContext])
+        }

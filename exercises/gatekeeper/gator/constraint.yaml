@@ -1,0 +1,12 @@
+kind: K8sNoPrivileged
+apiVersion: constraints.gatekeeper.sh/v1beta1
+metadata:
+  name: disallow-privileged-containers
+spec:
+  enforcementAction: enforce
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+  parameters:
+    forbiddenValue: true
