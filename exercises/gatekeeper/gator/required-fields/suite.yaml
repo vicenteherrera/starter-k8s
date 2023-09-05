@@ -1,0 +1,33 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+tests:
+  - name: example-suite
+    template: ./template.yaml
+    constraint: ./constraint.yaml
+    cases:
+      - name: svc-success
+        object: ./test-success.yaml
+        assertions:
+        - violations: 0
+      - name: svc-clusterip-success
+        object: ./test-clusterip-success.yaml
+        assertions:
+        - violations: 0
+      - name: svc-no-type-success
+        object: ./test-no-type-success.yaml
+        assertions:
+        - violations: 0
+      - name: svc-platform-ns-success
+        object: ./test-platform-ns-success.yaml
+        assertions:
+        - violations: 0  
+      - name: svc-failure
+        object: ./test-failure.yaml
+        assertions:
+        - violations: 1
+          message: "violates requirements"
+      - name: svc-platform-ns-failure
+        object: ./test-platform-ns-failure.yaml
+        assertions:
+        - violations: 1
+          message: "violates requirements"

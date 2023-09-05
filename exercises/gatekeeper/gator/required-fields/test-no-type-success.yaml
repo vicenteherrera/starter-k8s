@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-success
+  annotations:
+    owner: system
+spec:
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - port: 80
+      targetPort: 80

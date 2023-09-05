@@ -1,0 +1,119 @@
+kind: ConstraintTemplate
+apiVersion: templates.gatekeeper.sh/v1
+metadata:
+  name: k8srequiredfields
+spec:
+  crd:
+    spec:
+      names:
+        kind: k8sRequiredFields
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            message:
+              type: string
+            link:
+              type: string
+            selectorFields:
+              type: array
+              items:
+                type: object
+                description: >-
+                  Fields and values that have to be present in the source object to be selected for verification.
+                properties:
+                  path:
+                    type: string
+                    description: >-
+                      Path in the object that has to be present to be selected for verification.
+                  value:
+                    type: string
+                    description: >-
+                      In case it's present, value that the path attribute has to have to be selected for verification.
+            namespaces:
+              description: Namespaces where the validation is done. Use "*" for all.
+              type: array
+              items: 
+                type: string
+            bypassNamespaces:
+              description: Namespaces where the validation is not performed, even if all have been selected in "namespaces" parameter.
+              type: array
+              items: 
+                type: string
+            bypassResources:
+              description: Name of the specific resources to bypass, their namespace should also belong to bypassNamespaces.
+              type: array
+              items:
+                type: string
+            attributeRequirements:
+              type: array
+              items:
+                type: object
+                properties:
+                  path:
+                    type: array
+                    items:
+                      type: string
+                  operation:
+                    description: >-
+                      Operation to satisfy, can be "EXISTS", "IS", "IS_NOT", or "REGEX".
+                      "EXISTS" doesn't guarantee the value is not empty.
+                      "REGEX" will use the value as regular expression, but doesn't require attribute to exists.
+                    type: string
+                    enum:
+                    - "EXISTS"
+                    - "IS"
+                    - "IS_NOT"
+                    - "REGEX"
+                  value:
+                    type: string
+                  
+
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequiredfields
+
+        # Check if the object namespace is in the list of namespaces to analyze or "*" is in that list
+        not_must_analize(obj, namespace, parameters ) = true {
+          namespace != parameters.namespaces[_]
+          parameters.namespaces[_] != "*"
+        }
+
+        # Filter to which objects does this apply to
+        must_skip(obj, namespace, parameters ) = true {
+          namespace == parameters.bypassNamespaces[_]
+          obj.metadata.name == parameters.bypassResources[_]
+        }
+
+        # Validate annotation
+        valid_requirements(obj, req) {
+          path := req[i].path
+          op := req[i].operation
+          value := req[i].value
+          object.get(obj, path, "") == value
+        }
+        
+        # Violation check
+        violation[{"msg": msg, "details": {}}] {
+            namespace := object.get(input.review.object.metadata, "namespace", "")
+            
+            # Filter if object is in analyzed namespaces
+            not not_must_analize(input.review.object, namespace, input.parameters)
+
+            # Filter if object needs analysis
+            not must_skip(input.review.object, namespace, input.parameters)
+
+            # Violation evaluation
+            not valid_requirements(input.review.object, input.parameters.attributeRequirements)
+
+            # Output message
+            msg := sprintf(concat("",[
+              "%v '%v' in namespace '%v' violates requirements. ",
+              "%v"]), 
+              [input.review.object.kind,
+              input.review.object.metadata.name, 
+              namespace,
+              input.parameters.message
+              ])
+        }

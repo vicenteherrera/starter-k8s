@@ -3,4 +3,5 @@ all: verify
 
 
 verify:
-	gator verify --verbose ./suite.yaml
+	gator verify --verbose ./no-privileged-container/suite.yaml
+	gator verify --verbose ./required-fields/suite.yaml

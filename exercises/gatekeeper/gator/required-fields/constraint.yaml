@@ -1,0 +1,30 @@
+kind: k8sRequiredFields
+apiVersion: constraints.gatekeeper.sh/v1beta1
+metadata:
+  name: required-annotation-owner
+spec:
+  enforcementAction: enforce
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Service"]
+  parameters:
+    # What objects get validated
+    selectorFields:
+    - path: "spec.type"
+      value: "NodePort"
+    namespaces:
+    - "*"
+    bypassNamespaces:
+    - "platform"
+    bypassResources:
+    - "metrics"
+
+    # What validation is required from objects
+    attributeRequirements:
+    - path: ["metadata","annotations", "owner"]
+      operation: "IS"
+      value: "system"
+
+    # Message for violations
+    message: "Service type nodeport (except metrics in namespace platform) must have annotation 'owner' of 'system'."
