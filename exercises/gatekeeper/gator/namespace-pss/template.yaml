@@ -1,0 +1,41 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8snamespacepss
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sNamespacePSS
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8snamespacepss
+
+        array_contains(container, element) = true {
+          container[_] != element
+        }
+        contains_element(arr, elem) = true {
+          arr[_] = elem
+        } else = false { true }
+
+        contains_field(arr, elem) = true {
+          arr[_] = elem
+        } else = false { true }
+
+        violation[{"msg": msg, "details": {}}] {          
+          # Violation if object doesn't have any labels
+          not input.review.object.metadata.labels
+          msg := sprintf("not allowed, you must PSS labels on namespace creation for '%v'", [input.review.object.metadata])
+        }
+        violation[{"msg": msg, "details": {}}] {          
+          # Violation if object doesn't have pss enforce label
+          not input.review.object.metadata.labels["pod-security.kubernetes.io/enforce"]
+          msg := sprintf("not allowed, you must PSS labels on namespace creation for '%v'", [input.review.object.metadata])
+        }
+        violation[{"msg": msg, "details": {}}] {          
+          # Violation if object doesn't have pss enforce label
+          input.review.object.metadata.labels["pod-security.kubernetes.io/enforce"]!="restricted"
+          msg := sprintf("not allowed, you must PSS labels on namespace creation for '%v'", [input.review.object.metadata])
+        }
+
