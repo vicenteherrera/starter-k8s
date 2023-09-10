@@ -21,10 +21,12 @@ releases:
     # - ./prometheus/am-mailtrap.yaml
     - ./prometheus/am-opsgenie.yaml
     set:
+{{ if not (eq "" (env "opsgenie_api_key")) }}
     - name: alertmanager.config.global.opsgenie_api_key
       value: {{ requiredEnv "opsgenie_api_key" }}
     - name: alertmanager.config.receivers[0].opsgenie_configs[0].responders[0].id
       value: {{ requiredEnv "opsgenie_responder_id" }}
+{{ end }}
 
   - name: helm-exporter 
     chart: sstarcher/helm-exporter
@@ -43,6 +45,8 @@ releases:
     - promstack/promstack
     - helm-exporter/helm-exporter
 
+
+{{ if not (eq "" (env "robusta_signing_key")) }}
   - name: robusta
     chart: robusta/robusta 
     # version: ""
@@ -63,3 +67,5 @@ releases:
       value: {{ requiredEnv "robusta_private_key" | quote }}
     - name: rsa.pub
       value: {{ requiredEnv "robusta_public_key" | quote }}
+
+{{ end }}
