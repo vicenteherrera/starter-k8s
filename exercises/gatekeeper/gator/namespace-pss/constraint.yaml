@@ -9,4 +9,14 @@ spec:
       - apiGroups: [""]
         kinds: ["Namespace"]
   parameters:
+    
+    exemptNamespaces:
+    # privileged
+    - kube-system
+    - falco
+    - promstack
+    # baseline
+    - helm-exporter
+    - robusta
+    - vault
 

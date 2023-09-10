@@ -12,30 +12,20 @@ spec:
       rego: |
         package k8snamespacepss
 
-        array_contains(container, element) = true {
-          container[_] != element
+        namespace_exempt(obj, parameters) {
+          parameters.exemptNamespaces[_] == obj.metadata.name
         }
-        contains_element(arr, elem) = true {
-          arr[_] = elem
-        } else = false { true }
-
-        contains_field(arr, elem) = true {
-          arr[_] = elem
-        } else = false { true }
-
-        violation[{"msg": msg, "details": {}}] {          
-          # Violation if object doesn't have any labels
-          not input.review.object.metadata.labels
-          msg := sprintf("not allowed, you must PSS labels on namespace creation for '%v'", [input.review.object.metadata])
-        }
-        violation[{"msg": msg, "details": {}}] {          
+        violation[{"msg": msg, "details": {}}] {
+          not namespace_exempt(input.review.object, input.parameters)  
           # Violation if object doesn't have pss enforce label
           not input.review.object.metadata.labels["pod-security.kubernetes.io/enforce"]
-          msg := sprintf("not allowed, you must PSS labels on namespace creation for '%v'", [input.review.object.metadata])
+          msg := sprintf("namespace '%v' not allowed, it must PSS label 'pod-security.kubernetes.io/enforce'", [input.review.object.metadata.name])
         }
-        violation[{"msg": msg, "details": {}}] {          
-          # Violation if object doesn't have pss enforce label
+        violation[{"msg": msg, "details": {}}] {
+          not namespace_exempt(input.review.object, input.parameters)         
+          # Violation if object doesn't have pss enforce label to restricted
           input.review.object.metadata.labels["pod-security.kubernetes.io/enforce"]!="restricted"
-          msg := sprintf("not allowed, you must PSS labels on namespace creation for '%v'", [input.review.object.metadata])
+          msg := sprintf("namespace '%v' not allowed, PSS label 'pod-security.kubernetes.io/enforce' requires value 'privileged', found '%v'", 
+          [input.review.object.metadata.name, input.review.object.metadata.labels["pod-security.kubernetes.io/enforce"]])
         }
 

@@ -10,6 +10,16 @@ tests:
         assertions:
         - violations: 0
 
+      - name: test-ns-no-label-exempt-success
+        object: ./test-ns-no-label-exempt-success.yaml
+        assertions:
+        - violations: 0
+
+      - name: test-ns-privileged-exempt-success
+        object: ./test-ns-privileged-exempt-success.yaml
+        assertions:
+        - violations: 0
+
       - name: test-ns-no-label-failure
         object: ./test-ns-no-label-failure.yaml
         assertions:
