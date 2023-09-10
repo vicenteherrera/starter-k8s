@@ -82,8 +82,8 @@ spec:
 
         # Filter to which objects does this apply to
         must_skip(obj, namespace, parameters ) = true {
-          namespace == parameters.bypassNamespaces[_]
-          obj.metadata.name == parameters.bypassResources[_]
+          parameters.exemptions[index].namespace == namespace
+          parameters.exemptions[index].resources[_] == obj.metadata.name
         }
 
         # Validate annotation

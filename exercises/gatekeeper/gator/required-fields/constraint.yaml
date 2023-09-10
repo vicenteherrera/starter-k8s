@@ -8,6 +8,12 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Service"]
+    # scope: "Namespaced"
+    # namespaces:
+    #   - "tenant"
+  # Use match for kinds and namespaces
+  # to set where the constraint is enforced
+  
   parameters:
     # What objects get validated
     selectorFields:
@@ -15,10 +21,10 @@ spec:
       value: "NodePort"
     namespaces:
     - "*"
-    bypassNamespaces:
-    - "platform"
-    bypassResources:
-    - "metrics"
+    exemptions:
+    - namespace: "platform"
+      resources:
+      - "metrics"
 
     # What validation is required from objects
     attributeRequirements:
