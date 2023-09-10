@@ -13,6 +13,9 @@ start:
 	cd cluster/${CLUSTER_TYPE} && make start
 	@@echo "-------------------------------------------------"
 
+# Create a cluster just with Gatekeeper
+start_gatekeeper: start gatekeeper reinstall_gatekeeper_rules
+
 # Delete a cluster
 delete:
 	cd cluster/${CLUSTER_TYPE} && make delete
@@ -47,6 +50,31 @@ prepare_secrets:
 	@@sed "s/replace_api_key/$$opsgenie_api_key/g" ./charts/prometheus/am-opsgenie.sample.yaml \
 		| sed "s/replace_team_id/$$opsgenie_responder_id/g" > ./charts/prometheus/am-opsgenie.yaml
 	@@echo "./charts/prometheus/am-opsgenie.yaml generated"
+
+# -------------------------------------------------
+
+# Install gatekeeper
+install_gatekeeper:
+	helm repo add gatekeeper https://open-policy-agent.github.io/gatekeeper/charts
+	helm upgrade --install  --namespace "gatekeeper" --create-namespace \
+		gatekeeper-system gatekeeper/gatekeeper --wait \
+		--version "3.13.0"
+
+# Reinstall Gatekeeper constraints and templates
+reinstall_gatekeeper_rules:
+	@echo "# Linting charts"
+	helm lint ./charts/gatekeeper/chart-templates/
+	helm lint ./charts/gatekeeper/chart-constraints/
+	@echo ""
+	@echo "# Removing old charts"
+	helm uninstall -n gatekeeper gatekeeper-constraints --wait ||:
+	helm uninstall -n gatekeeper gatekeeper-templates --wait ||:
+	sleep 1
+	@echo ""
+	@echo "# Installing charts"
+	helm install -n gatekeeper gatekeeper-templates ./charts/gatekeeper/chart-templates/ --wait
+	sleep 3
+	helm install -n gatekeeper gatekeeper-constraints ./charts/gatekeeper/chart-constraints/
 
 # -------------------------------------------------
 
