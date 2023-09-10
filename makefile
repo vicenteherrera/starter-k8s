@@ -113,14 +113,11 @@ install_argocd:
 # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/core-install.yaml
 
 # Delete ArgoCD
-proxy_argocd:
-	@echo "http://localhost:8090"
-	@echo "user: admin"
-	@echo "pass:"
-	@kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
-	kubectl port-forward svc/argocd-server -n argocd 8090:443
+delete_argocd:
+	kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+	@echo "Delete argocd namespace manually when objects are finalized"
 
-# Install istiio
+# Install Istio
 install_istio:
 	istioctl install --set profile=demo
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/prometheus.yaml
@@ -147,3 +144,10 @@ proxy_alertmanager:
 proxy_robusta:
 	@echo "No need to proxy, visit:"
 	@echo "https://platform.robusta.dev/"
+
+proxy_argocd:
+	@echo "http://localhost:8090"
+	@echo "user: admin"
+	@echo "pass:"
+	@kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+	kubectl port-forward svc/argocd-server -n argocd 8090:443
