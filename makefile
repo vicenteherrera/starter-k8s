@@ -14,7 +14,7 @@ start:
 	@@echo "-------------------------------------------------"
 
 # Create a cluster just with Gatekeeper
-start_gatekeeper: start gatekeeper reinstall_gatekeeper_rules
+start_gatekeeper: start install_gatekeeper reinstall_gatekeeper_rules
 
 # Delete a cluster
 delete:
