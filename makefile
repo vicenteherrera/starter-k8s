@@ -117,13 +117,22 @@ delete_argocd:
 	kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 	@echo "Delete argocd namespace manually when objects are finalized"
 
+# -------------------------------------------------
+
 # Install Istio
 install_istio:
 	istioctl install --set profile=demo
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/prometheus.yaml
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/grafana.yaml
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/kiali.yaml
+	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/extras/zipkin.yaml
 	kubectl label ns default istio-injection=enabled
+
+install_istio_demo:
+	kubectl apply -f release/kubernetes-manifests.yaml
+	kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
+	kubectl apply -f https://github.com/GoogleCloudPlatform/microservices-demo/blob/main/release/istio-manifests.yaml
+	kubectl delete svc frontend
 
 # -------------------------------------------------
 
