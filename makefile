@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 
 CLUSTER_TYPE="minikube"
 
@@ -6,11 +7,11 @@ CLUSTER_TYPE="minikube"
 # -------------------------------------------------
 
 # Create a cluster, install and configure software
-all: start helmfile_lint helmfile_sync enable_audit_log
+all: start helmfile_sync enable_audit_log
 
 # Create a cluster
 start:
-	cd cluster/${CLUSTER_TYPE} && make start
+	@$(MAKE) -s -C cluster/${CLUSTER_TYPE} start
 	@@echo "-------------------------------------------------"
 
 # Create a cluster just with Gatekeeper
@@ -28,16 +29,24 @@ audit_log:
 kubeconfig: 
 	cd cluster/${CLUSTER_TYPE} && make kubeconfig
 
+tunnel:
+	minikube tunnel
+
 # -------------------------------------------------
 
 # Sync a set of charts: Prometheus, Grafana, Alertmanager, Gatekeeper, Vault, cert-manager
-helmfile_sync:
+helmfile_sync: helmfile_lint
 	cd charts && helmfile sync
 	@@echo "-------------------------------------------------"
 
 # Lint charts to be deployed
 helmfile_lint: 
 	cd charts && helmfile lint
+	@@echo "-------------------------------------------------"
+
+# Lint charts to be deployed
+helmfile_delete: 
+	cd charts && helmfile delete
 	@@echo "-------------------------------------------------"
 
 # Enable audit log
@@ -51,6 +60,17 @@ prepare_secrets:
 		| sed "s/replace_team_id/$$opsgenie_responder_id/g" > ./charts/prometheus/am-opsgenie.yaml
 	@@echo "./charts/prometheus/am-opsgenie.yaml generated"
 
+
+wait_pod_ready:
+	@echo "Waiting pods with label ${POD_LABEL} to be ready"
+	@while [[ $$(kubectl get pods -l ${POD_LABEL} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; \
+		do echo -n "." && sleep 1; \
+		done; \
+		echo ""
+
+wait_crd_established:
+	@echo "Waiting for CRD ${CRD_WAIT} on namespace to be established"
+	kubectl -n ${CRD_NAMESPACE} wait --for condition=established --timeout=60s crd/${CRD_WAIT}
 # -------------------------------------------------
 
 # Install gatekeeper
