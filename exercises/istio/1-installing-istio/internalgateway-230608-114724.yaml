@@ -1,0 +1,16 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: internal-gateway-only
+spec:
+  profile: empty
+  components:
+    ingressGateways:
+      - namespace: some-namespace
+        name: ilb-gateway
+        enabled: true
+        label:
+          istio: ilb-gateway
+        k8s:
+          serviceAnnotations:
+            networking.gke.io/load-balancer-type: "Internal"
