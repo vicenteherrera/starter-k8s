@@ -1,0 +1,23 @@
+---
+releases:
+  - name: chart-hooks
+    chart: ./examples/chart-hooks/
+    namespace: examples
+    version: "0.1.0" 
+    installed: true
+    wait: true
+    waitForJobs: true
+    createNamespace: true
+    values:
+      - sleepyTime: 12
+
+  - name: chart-failed
+    chart: ./examples/chart-failed/
+    namespace: examples
+    version: "0.1.0" 
+    installed: true
+    wait: true
+    waitForJobs: true
+    createNamespace: true
+    timeout: 30
+
