@@ -119,22 +119,64 @@ delete_argocd:
 
 # -------------------------------------------------
 
+start_istio: start install_istio
+
 # Install Istio
 install_istio:
-	istioctl install --set profile=demo
+	yes | istioctl install --set profile=demo
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/prometheus.yaml
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/grafana.yaml
+	kubectl label ns default istio-injection=enabled
+	# @echo "waiting for CRD to resolve"; sleep 5
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/kiali.yaml
 	kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/extras/zipkin.yaml
-	kubectl label ns default istio-injection=enabled
+
+get_istio_ingress_ip:
+	@echo "Remember to run minikube tunnel first on that cluster engine"
+	@echo "$$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+
+istio_dash_kiali:
+	istioctl dash kiali
+
+istio_dash_grafana:
+	istioctl dashboard grafana
+
+istio_dash_prometheus:
+	istioctl dashboard prometheus
+
+istio_dash_zipkin:
+	istioctl dashboard zipkin
 
 install_istio_demo:
-	kubectl apply -f release/kubernetes-manifests.yaml
 	kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
-	kubectl apply -f https://github.com/GoogleCloudPlatform/microservices-demo/blob/main/release/istio-manifests.yaml
-	kubectl delete svc frontend
+	kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/istio-manifests/allow-egress-googleapis.yaml
+	kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/istio-manifests/frontend-gateway.yaml
+	kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/istio-manifests/frontend.yaml
+	kubectl delete svc frontend-external ||:
+	@$(MAKE) -s wait_istio_demo_pods
 
+delete_istio_demo:
+	kubectl delete -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml ||:
+	kubectl delete -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/istio-manifests/allow-egress-googleapis.yaml
+	kubectl delete -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/istio-manifests/frontend-gateway.yaml
+	kubectl delete -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/istio-manifests/frontend.yaml
+
+wait_istio_demo_pods:
+	@$(MAKE) -s POD_LABEL="app=adservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=cartservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=checkoutservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=currencyservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=emailservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=frontend" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=loadgenerator" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=paymentservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=productcatalogservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=recommendationservice" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=redis-cart" wait_pod_ready
+	@$(MAKE) -s POD_LABEL="app=shippingservice" wait_pod_ready
 # -------------------------------------------------
+
+
 
 proxy_prometheus:
 	# We don't use port 9090 to avoid collision with local installation of Prometheus
