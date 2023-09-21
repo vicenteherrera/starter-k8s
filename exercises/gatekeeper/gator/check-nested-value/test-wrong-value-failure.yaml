@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-failure
+  labels:
+    label_a:
+      label::b: wrong-value
+spec:
+  containers:
+  - name: nginx
+    image: nginx

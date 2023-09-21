@@ -1,0 +1,27 @@
+kind: ConstraintTemplate
+apiVersion: templates.gatekeeper.sh/v1beta1
+metadata:
+  name: k8schecknestedvalue
+spec:
+  crd:
+    spec:
+      names:
+        kind: k8sCheckNestedValue
+  parameters:
+    - name: forbiddenValue
+      type: string
+      description: "The enforced value for securityContext.privileged"
+      openAPIV3Schema:
+        type: string       
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8schecknestedvalue
+
+        valid_value(obj) {
+          obj.metadata.labels.label_a["label::b"] == "required-value"
+        }
+        violation[{"msg": msg, "details": {}}] {
+            not valid_value(input.review.object)
+            msg := sprintf("not allowed: %v", [input.review.object])
+        }

@@ -1,0 +1,36 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+tests:
+  - name: example-suite
+    template: ./template2.yaml
+    constraint: ./constraint.yaml
+    cases:
+
+      - name: test-success
+        object: ./test-success.yaml
+        assertions:
+        - violations: 0
+
+      - name: test-no-labels-failure
+        object: ./test-no-labels-failure.yaml
+        assertions:
+        - violations: 1
+          message: "not allowed"
+
+      - name: test-no-label-a-failure
+        object: ./test-no-label-a-failure.yaml
+        assertions:
+        - violations: 1
+          message: "not allowed"
+
+      - name: test-no-label-b-failure
+        object: ./test-no-label-b-failure.yaml
+        assertions:
+        - violations: 1
+          message: "not allowed"
+
+      - name: test-wrong-value-failure
+        object: ./test-wrong-value-failure.yaml
+        assertions:
+        - violations: 1
+          message: "not allowed"
