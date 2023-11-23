@@ -1,0 +1,27 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sNamespacePSS
+metadata:
+  name: namespace-must-have-pss-labels
+spec:
+  enforcementAction: warn
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Namespace"]
+  parameters:
+    
+    exemptNamespaces:
+    # privileged
+    - kube-system
+    - falco
+    - promstack
+    # baseline
+    - helm-exporter
+    - robusta
+    - vault
+    - default
+    # other
+    - cert-manater
+    - default
+    - kube-node-lease
+    - kube-public
