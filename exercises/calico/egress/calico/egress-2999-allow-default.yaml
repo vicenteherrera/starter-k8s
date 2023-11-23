@@ -1,0 +1,10 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: egress-allow-default
+spec:
+  order: 2999
+  selector: pod-allow-egress not in { 'disabled' }
+  egress:
+    - action: Allow

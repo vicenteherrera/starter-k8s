@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-egress-namespace
+spec:
+  podSelector: {} # This matches all pods in the namespace
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: web
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: web

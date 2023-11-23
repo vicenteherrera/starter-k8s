@@ -1,0 +1,13 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: egress-deny-ec2-metadata
+spec:
+  order: 20
+  namespaceSelector: projectcalico.org/name not in { 'kube-system' }
+  egress:
+  - action: Deny
+    destination:
+      nets:
+        - 169.254.169.254/32

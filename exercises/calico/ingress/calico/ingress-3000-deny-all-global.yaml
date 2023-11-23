@@ -1,0 +1,9 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: ingress-deny-global
+spec:
+  order: 3000 # if it is 1000 or less, knp can't override this "default" rule
+  ingress:
+    - action: Deny

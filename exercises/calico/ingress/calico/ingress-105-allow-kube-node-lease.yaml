@@ -1,0 +1,15 @@
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: ingress-allow-kube-node-lease
+  namespace: kube-node-lease
+spec:
+  order: 105
+  selector: all()
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      source:
+        namespaceSelector: projectcalico.org/name in { 'kube-node-lease' }

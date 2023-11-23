@@ -1,0 +1,25 @@
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: ingress-allow-dns-kube-system
+  namespace: kube-system
+spec:
+  order: 100
+  selector: all()
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - 53
+    - action: Allow
+      protocol: UDP
+      destination:
+        ports:
+          - 53
+    - action: Allow
+      source:
+        namespaceSelector: projectcalico.org/name in { 'kube-system' }

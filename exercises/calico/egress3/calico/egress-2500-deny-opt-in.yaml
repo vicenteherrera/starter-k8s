@@ -1,0 +1,10 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: egress-deny-opt-in
+spec:
+  order: 2500 # if it is 1000 or less, knp can't override this "default" rule
+  namespaceSelector: allow-egress in {'disabled'}
+  egress:
+    - action: Deny

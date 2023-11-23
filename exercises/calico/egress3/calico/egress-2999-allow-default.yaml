@@ -1,0 +1,39 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: egress-allow-default
+spec:
+  order: 2999
+  selector: pod-allow-egress not in { 'disabled' }
+  egress:
+    - action: Allow
+
+WE HAVE
+
+pod1:
+  pod-allow-egress=disabled
+  => egress disallowed (except if allowed in Kubernetes NetworkPolicy)
+
+pod2:
+  pod-allow-egress=disabled
+  => egress disallowed (except if allowed in Kubernetes NetworkPolicy)
+
+
+pod3:
+  pod-allow-egress=disabled
+  => egress disallowed (except if allowed in Kubernetes NetworkPolicy)
+
+
+podX:
+  (no label)
+  => egress allowed
+
+
+NEW
+
+namespace label: allow-egress=disabled
+
+podX:
+  (no matter label)
+  => egress blocked (except if allowed in Kubernetes NetworkPolicy)

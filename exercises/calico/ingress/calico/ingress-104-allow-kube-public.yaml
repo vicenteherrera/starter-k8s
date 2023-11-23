@@ -1,0 +1,15 @@
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: ingress-allow-dns-kube-public
+  namespace: kube-public
+spec:
+  order: 104
+  selector: all()
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      source:
+        namespaceSelector: projectcalico.org/name in { 'kube-public' }

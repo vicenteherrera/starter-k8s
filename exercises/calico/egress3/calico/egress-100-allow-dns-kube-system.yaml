@@ -1,0 +1,23 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: egress-allow-dns-kube-system
+spec:
+  order: 100
+  types:
+  - Egress
+  egress:
+  - action: Allow
+    protocol: TCP
+    source:
+      ports:
+        - 53
+  - action: Allow
+    protocol: UDP
+    source:
+      ports:
+        - 53
+  - action: Allow
+    destination:
+      namespaceSelector: projectcalico.org/name in {'kube-system'}
