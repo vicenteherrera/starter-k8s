@@ -41,7 +41,7 @@ tunnel:
 
 # Sync a set of charts: Prometheus, Grafana, Alertmanager, Gatekeeper, Vault, cert-manager
 helmfile_sync: helmfile_lint
-	cd charts && helmfile sync
+	cd charts && helmfile sync --include-transitive-needs
 	@@echo "-------------------------------------------------"
 
 # Lint charts to be deployed
