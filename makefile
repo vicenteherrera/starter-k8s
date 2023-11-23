@@ -9,10 +9,15 @@ CLUSTER_TYPE="minikube"
 # Create a cluster, install and configure software
 all: start helmfile_sync enable_audit_log
 
+NETWORK_DEFAULT=""
+NETWORK_CALICO="CALICO"
+NETWORK_CILIUM="CILIUM"
+NETWORK:=
 # Create a cluster
 start:
-	@$(MAKE) -s -C cluster/${CLUSTER_TYPE} start
-	@@echo "-------------------------------------------------"
+	@echo "# Using cluster type ${CLUSTER_TYPE} with network ${NETWORK}"
+	@$(MAKE) -s -C cluster/${CLUSTER_TYPE} start NETWORK="$(NETWORK)"
+	@echo "-------------------------------------------------"
 
 # Create a cluster just with Gatekeeper
 start_gatekeeper: start install_gatekeeper reinstall_gatekeeper_rules
