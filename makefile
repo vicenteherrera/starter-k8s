@@ -105,8 +105,21 @@ reinstall_gatekeeper_rules:
 
 # Install Google Microservices Demo
 install_demo:
-	kubectl create ns tenant ||:
+	@$(MAKE) -s create_ns NAMESPACE="tenant"
 	kubectl apply -n tenant -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
+
+
+NAMESPACE:=
+create_ns:
+	@echo "apiVersion: v1\n"\
+	"kind: Namespace\n"\
+	"metadata:\n"\
+	"  name: ${NAMESPACE}\n"\
+	"  labels:\n"\
+	"    pod-security.kubernetes.io/enforce: restricted\n"\
+	"    pod-security.kubernetes.io/enforce-version: latest" |\
+	kubectl create -f -
+
 
 # Delete Google Microservices Demo
 delete_demo:
