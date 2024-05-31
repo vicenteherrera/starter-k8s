@@ -14,3 +14,11 @@ spec:
     - podSelector:
         matchLabels:
           app: web
+
+  # If you don't add this, and just apply this policy,
+  # DNS to resolve service's names is blocked
+  # - to:
+  #   ports:
+  #   - protocol: UDP
+  #     port: 53
+
