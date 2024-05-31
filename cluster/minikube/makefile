@@ -1,7 +1,7 @@
 
 KUBERNETES_VER=1.28.0-rc.1
 CPUS=4
-MEMORY=8g
+MEMORY=7800mb
 DISK=20000mb
 # See https://github.com/prometheus-operator/kube-prometheus
 
