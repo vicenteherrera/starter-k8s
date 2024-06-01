@@ -27,7 +27,7 @@ start:
 		--extra-config=kubelet.authorization-mode=Webhook \
 		--extra-config=scheduler.bind-address=0.0.0.0 \
 		--extra-config=controller-manager.bind-address=0.0.0.0 \
-		--extra-config=kubelet.housekeeping-interval=10s $$NETPARAM1 $$NETPARAM1 ; \
+		--extra-config=kubelet.housekeeping-interval=10s $$NETPARAM1 $$NETPARAM2 ; \
 	if test "$(NETWORK)" = "$(NETWORK_CILIUM)"; then \
 		echo "# Additional Cilium CNI installation step" ; \
 		cilium install ; \
